@@ -42,4 +42,7 @@ java_oracle_version_str_pkg: "{{ 'jdk' if java_oracle_distribution == 'srv' else
 java_oracle_redis_filename: "{{ 'server-jre' if java_oracle_distribution == 'srv' else java_oracle_distribution }}-{{ java_oracle_version }}-linux-x64.tar.gz"
 
 #   where to install the JCE extensions to
-java_oracle_jce_install_dir: "{{ java_install_dir }}/oracle/{{ java_oracle_version_str_pkg }}/{{ '/jre' if java_oracle_distribution in ('jdk', 'srv') else '' }}/lib/security"
+java_oracle_jce_install_dir: "{{ java_install_dir }}/{{ java_oracle_version_str_pkg }}/{{ '/jre' if java_oracle_distribution in ('jdk', 'srv') else '' }}/lib/security"
+
+# Should be installed system-wide script for setting JAVA environment
+java_profile_d: true

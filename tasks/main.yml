@@ -76,7 +76,7 @@
     owner: 0
     group: 0
     mode: 0755
-    dest: "{{ java_install_dir }}/oracle"
+    dest: "{{ java_install_dir }}"
 
 # Install the Oracle redistributable package to the node
 - name: Copy Java redistributable packages
@@ -95,9 +95,9 @@
   when: not ansible_check_mode
   unarchive:
     src: "{{ lib_persistent_data_path_remote }}/{{ java_oracle_redis_filename }}"
-    dest: "{{ java_install_dir }}/oracle/"
+    dest: "{{ java_install_dir }}"
     copy: false
-    creates: "{{ java_install_dir }}/oracle/{{ java_oracle_version_str_pkg }}"
+    creates: "{{ java_install_dir }}/{{ java_oracle_version_str_pkg }}"
 
 - name: Unarchive Java JCE package
   tags: java
@@ -151,7 +151,7 @@
   become: true
   template:
     src: java.sh.j2
-    dest: "{{ java_install_dir }}/java.sh"
+    dest: "{{ ansible_local.java.general.java_home }}/{{ java_oracle_version_str_pkg }}_env.sh"
     owner: 0
     group: 0
     mode: 0755
@@ -159,8 +159,16 @@
 - name: Activate Java system environment configuration
   tags: java
   become: true
-  when: not ansible_check_mode
+  when: not ansible_check_mode and java_profile_d
   file:
     state: link
-    src: "{{ java_install_dir }}/java.sh"
-    dest: /etc/profile.d/java.sh
+    src: "{{ ansible_local.java.general.java_home }}/{{ java_oracle_version_str_pkg }}_env.sh"
+    dest: "/etc/profile.d/{{ java_oracle_version_str_pkg }}.sh"
+
+- name: Deactivate Java system environment configuration
+  tags: java
+  become: true
+  when: not ansible_check_mode and not java_profile_d
+  file:
+    state: absent
+    path: "/etc/profile.d/{{ java_oracle_version_str_pkg }}.sh"
