@@ -1,0 +1,10 @@
+---
+- name: Install Java
+  tags: java
+  become: true
+  when: not ansible_check_mode
+  unarchive:
+    src: "{{ lib_persistent_data_path_remote }}/{{ java_oracle_redis_filename }}"
+    dest: "{{ java_install_dir }}"
+    copy: false
+    creates: "{{ java_install_dir }}/{{ java_oracle_version_str_pkg }}"

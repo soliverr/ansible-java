@@ -89,15 +89,17 @@
   vars:
     filename: "{{ item }}"
 
-- name: Install Java
+# Unarchive
+- include: install.yml
   tags: java
-  become: true
-  when: not ansible_check_mode
-  unarchive:
-    src: "{{ lib_persistent_data_path_remote }}/{{ java_oracle_redis_filename }}"
-    dest: "{{ java_install_dir }}"
-    copy: false
-    creates: "{{ java_install_dir }}/{{ java_oracle_version_str_pkg }}"
+  static: yes
+  when: java_oracle_version_minor >= 7|int
+
+- include: install-bin.yml
+  tags: java
+  static: yes
+  when: java_oracle_version_minor <= 6|int
+
 
 - name: Unarchive Java JCE package
   tags: java

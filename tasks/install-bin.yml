@@ -1,0 +1,25 @@
+---
+- name: Copy distribution file to target directory
+  tags: java
+  when: not ansible_check_mode
+  copy:
+    src: "{{ lib_persistent_data_path_remote }}/{{ java_oracle_redis_filename }}"
+    dest: "{{ java_install_dir }}/{{ java_oracle_redis_filename }}"
+    remote_src: yes
+    mode: 0755
+
+- name: Install Java
+  tags: java
+  become: true
+  when: not ansible_check_mode
+  command: "{{ java_install_dir }}/{{ java_oracle_redis_filename }}"
+  args:
+    chdir: "{{ java_install_dir }}"
+    creates: "{{ java_install_dir }}/{{ java_oracle_version_str_pkg }}"
+
+- name: Remove distribution file
+  tags: java
+  when: not ansible_check_mode
+  file:
+    name: "{{ java_install_dir }}/{{ java_oracle_redis_filename }}"
+    state: absent
